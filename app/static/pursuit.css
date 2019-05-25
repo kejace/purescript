@@ -166,6 +166,20 @@ body {
  * Have as few of these as possible and keep them general, because they will
  * influence every component hereafter.
  * ========================================================================== */
+.nsvalue {
+  font-weight: normal;
+  font-style: normal;
+  color: #ab8d53;
+}
+.nstype {
+  font-weight: normal;
+  font-style: italic;
+}
+.nskind {
+  font-weight: bold !important;
+  color: #dd9d21;
+  font-style: italic;
+}
 :target {
   background-color: #f1f5f9;
 }
@@ -255,14 +269,14 @@ h1 {
 h2 {
   font-size: 1.953em;
   font-weight: normal;
-  line-height: 1.250;
+  line-height: 1.25;
   margin-top: 3.052rem;
   margin-bottom: 1rem;
 }
 h3 {
   font-size: 1.563em;
   font-weight: normal;
-  line-height: 1.250;
+  line-height: 1.25;
   margin-top: 2.441rem;
   margin-bottom: 1rem;
 }
@@ -326,7 +340,7 @@ ul {
 }
 ul li {
   position: relative;
-  padding-left: 1.250em;
+  padding-left: 1.25em;
 }
 ul li::before {
   position: absolute;
@@ -334,7 +348,7 @@ ul li::before {
   content: "–";
   display: inline-block;
   margin-left: -1.25em;
-  width: 1.250em;
+  width: 1.25em;
 }
 /* Tying this tightly to ul at the moment because it's a slight variation thereof */
 ul.ul--search li::before {
@@ -345,7 +359,7 @@ ul.ul--search li::before {
 ol {
   margin-top: 1rem;
   margin-bottom: 1rem;
-  padding-left: 1.250em;
+  padding-left: 1.25em;
 }
 ol li {
   position: relative;
