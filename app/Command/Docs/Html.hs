@@ -3,9 +3,12 @@
 
 module Command.Docs.Html
   ( asHtml
+  , asSourceHtml
   , layout
   , writeHtmlModule
   , writeHtmlModules
+  , writeHtmlSourceModules
+  , writeHtmlSourceModule
   ) where
 
 import           Control.Applicative
@@ -29,15 +32,27 @@ writeHtmlModules :: FilePath -> [(P.ModuleName, D.HtmlOutputModule Html)] -> IO 
 writeHtmlModules outputDir modules = do
   let moduleList = sort $ map fst modules
   writeHtmlFile (outputDir ++ "/index.html") (renderIndexModule moduleList)
-  mapM_ (writeHtmlModule outputDir . (fst &&& layout moduleList)) modules
+  mapM_ (writeHtmlDocModule outputDir . (fst &&& layout moduleList)) modules
+
+writeHtmlSourceModules :: FilePath -> [(P.ModuleName, Html)] -> IO ()
+writeHtmlSourceModules outputDir = mapM_ (writeHtmlSourceModule outputDir)
 
 asHtml :: D.Module -> (P.ModuleName, D.HtmlOutputModule Html)
 asHtml m = D.moduleAsHtml (const $ Just $ getHtmlRenderContext (D.modName m)) m
 
-writeHtmlModule :: FilePath -> (P.ModuleName, Html) -> IO ()
-writeHtmlModule outputDir (mn, html) = do
-  let filepath = outputDir ++ "/" ++ T.unpack (P.runModuleName mn) ++ ".html"
+asSourceHtml :: D.Module -> (P.ModuleName, Html)
+asSourceHtml m = D.moduleAsSourceHtml (const $ Just $ getHtmlRenderContext (D.modName m)) m
+
+writeHtmlModule :: FilePath -> (P.ModuleName, Html) -> String -> IO ()
+writeHtmlModule outputDir (mn, html) preext = do
+  let filepath = outputDir ++ "/" ++ T.unpack (P.runModuleName mn) ++ preext ++ ".html"
   writeHtmlFile filepath html
+
+writeHtmlDocModule :: FilePath -> (P.ModuleName, Html) -> IO ()
+writeHtmlDocModule fp tp = writeHtmlModule fp tp ""
+
+writeHtmlSourceModule :: FilePath -> (P.ModuleName, Html) -> IO ()
+writeHtmlSourceModule fp tp = writeHtmlModule fp tp ".source"
 
 writeHtmlFile :: FilePath -> Html -> IO ()
 writeHtmlFile filepath =
@@ -47,7 +62,7 @@ getHtmlRenderContext :: P.ModuleName -> D.HtmlRenderContext
 getHtmlRenderContext mn = D.HtmlRenderContext
   { D.buildDocLink = getLink mn
   , D.renderDocLink = renderLink
-  , D.renderSourceLink = const Nothing
+  , D.renderSourceLink = renderGeneratedSourceLink mn
   }
 
 -- TODO: try to combine this with the one in Docs.Types?
@@ -86,6 +101,13 @@ renderLink l =
       P.internalError "DepsModule: not implemented"
     D.BuiltinModule dest  ->
       P.runModuleName dest <> ".html"
+
+renderGeneratedSourceLink :: P.ModuleName -> P.SourceSpan -> Maybe Text
+renderGeneratedSourceLink mn span =
+  let spanStart  = T.pack . show . P.sourcePosLine $ P.spanStart span
+      spanEnd    = T.pack . show . P.sourcePosLine $ P.spanStart span
+      moduleName = P.runModuleName mn
+   in Just $ moduleName <> ".source.html" <> "#L" <> spanStart <> ".." <> spanEnd
 
 layout :: [P.ModuleName] -> (P.ModuleName, D.HtmlOutputModule Html) -> Html
 layout moduleList (mn, htmlDocs) =

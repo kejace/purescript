@@ -45,10 +45,14 @@ docgen (PSCDocsOptions fmt inputGlob) = do
     Html -> do
       let outputDir = "./generated-docs/html" -- TODO: make this configurable
       let ext = compile "*.html"
+      let ext' = compile "*.source.html"
       let msHtml = map asHtml ms
+      let msSrcHtml = map asSourceHtml ms
       createDirectoryIfMissing True outputDir
       globDir1 ext outputDir >>= mapM_ removeFile
+      globDir1 ext' outputDir >>= mapM_ removeFile
       writeHtmlModules outputDir msHtml
+      writeHtmlSourceModules outputDir msSrcHtml
     Markdown -> do
       let outputDir = "./generated-docs/md" -- TODO: make this configurable
       let ext = compile "*.md"

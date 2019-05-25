@@ -10,6 +10,7 @@ module Language.PureScript.Docs.AsHtml (
   declNamespace,
   packageAsHtml,
   moduleAsHtml,
+  moduleAsSourceHtml,
   makeFragment,
   renderMarkdown
 ) where
@@ -94,6 +95,12 @@ moduleAsHtml getHtmlCtx Module{..} = (modName, HtmlOutputModule modHtml reexport
     flip map modReExports $ \(pkg, decls) ->
         let r = fromMaybe nullRenderContext $ getHtmlCtx pkg
          in (pkg, foldMap (declAsHtml r) decls)
+
+moduleAsSourceHtml
+  :: (InPackage P.ModuleName -> Maybe HtmlRenderContext)
+  -> Module
+  -> (P.ModuleName, Html)
+moduleAsSourceHtml _ Module{..} = (modName, H.pre . H.toHtml $ "hello from " ++ T.unpack (P.runModuleName modName))
 
 -- renderIndex :: LinksContext -> [(Maybe Char, Html)]
 -- renderIndex LinksContext{..} = go ctxBookmarks
