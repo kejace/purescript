@@ -63,7 +63,7 @@ renderDeclaration Declaration{..} =
            [syntax "|" | not (null fundeps)]
         ++ [mintersperse
              (syntax "," <> sp)
-             [typeVars from <> sp <> syntax "->" <> sp <> typeVars to | (from, to) <- fundeps ]
+             [typeVars from <> sp <> syntax "-f>" <> sp <> typeVars to | (from, to) <- fundeps ]
            ]
         where
           typeVars = mintersperse sp . map typeVar

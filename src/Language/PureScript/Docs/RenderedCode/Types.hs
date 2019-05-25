@@ -203,6 +203,8 @@ data RenderedCodeElement
   -- namespace (value, type, or kind). Note that this is not related to the
   -- kind called Symbol for type-level strings.
   | Symbol Namespace Text Link
+  -- Allows grouping related RenderedCodeElements for display purposes (e.g., in a arrowed kind)
+  | RCEGroup [RenderedCodeElement]
   deriving (Show, Eq, Ord)
 
 instance A.ToJSON RenderedCodeElement where

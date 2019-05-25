@@ -54,7 +54,7 @@ renderKind
   operators :: OperatorTable () (Kind a) RenderedCode
   operators =
     OperatorTable [ [ Wrap matchRow $ \_ k -> syntax "#" <> sp <> k]
-                  , [ AssocR funKind $ \arg ret -> arg <> sp <> syntax "->" <> sp <> ret ] 
+                  , [ AssocR funKind $ \arg ret -> arg <> sp <> syntax "-k>" <> sp <> ret ]
                   -- , [ Split unknownKind $ \_ _ -> syntax "---UNKNOWN---"]
                   -- , [ Split namedKind $ \_ _ -> syntax "---NAMED---"]
                   ]

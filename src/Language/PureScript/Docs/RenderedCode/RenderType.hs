@@ -129,7 +129,7 @@ matchType = buildPrettyPrinter operators matchTypeAtom
   operators :: OperatorTable () PrettyPrintType RenderedCode
   operators =
     OperatorTable [ [ AssocL typeApp $ \f x -> f <> sp <> x ]
-                  , [ AssocR appliedFunction $ \arg ret -> mintersperse sp [arg, syntax "->", ret] ]
+                  , [ AssocR appliedFunction $ \arg ret -> mintersperse sp [arg, syntax "-t>", ret] ]
                   , [ Wrap constrained $ \deps ty -> renderConstraints deps ty ]
                   , [ Wrap forall_ $ \tyVars ty -> mconcat [ keywordForall, sp, renderTypeVars tyVars, syntax ".", sp, ty ] ]
                   , [ Wrap kinded $ \k ty -> mintersperse sp [ty, syntax "::", renderKind k] ]
