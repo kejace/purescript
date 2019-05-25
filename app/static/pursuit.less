@@ -207,6 +207,24 @@ html, body {
  * influence every component hereafter.
  * ========================================================================== */
 
+.nsvalue {
+  font-weight: normal;
+  font-style: normal;
+  color: desaturate(@code_foreground, 20%);
+}
+
+.nstype {
+  font-weight: normal;
+  font-style: italic;
+}
+
+
+.nskind {
+  font-weight: bold !important;
+  color: saturate(@code_foreground, 20%);
+  font-style: italic;
+}
+
 :target {
   background-color: @code_background;
 }

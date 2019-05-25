@@ -71,6 +71,6 @@ renderKind
   operators =
     OperatorTable [ [ Wrap matchRow $ \_ k -> syntax "#" <> sp <> k]
                   , [ AssocR funKind $ \arg ret -> arg <> sp <> syntax "->" <> sp <> ret ]
-                  , [ Split unknownKind $ \_ _ -> syntax "---UNKNOWN---"]
-                  , [ Split namedKind $ \_ _ -> syntax "---NAMED---"]
+               --   , [ Split unknownKind $ \_ _ -> syntax "---UNKNOWN---"]
+               --   , [ Split namedKind $ \_ _ -> syntax "---NAMED---"]
                   ]

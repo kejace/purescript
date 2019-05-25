@@ -193,6 +193,11 @@ renderChildren r xs = ul $ mapM_ item xs
   fragment decl = makeFragment (childDeclInfoNamespace (cdeclInfo decl)) (cdeclTitle decl)
   renderCode = code . codeAsHtml r . Render.renderChildDeclaration
 
+nsToClass ns = case ns of
+  ValueLevel -> "nsvalue"
+  TypeLevel -> "nstype"
+  KindLevel -> "nskind"
+
 codeAsHtml :: HtmlRenderContext -> RenderedCode -> Html
 codeAsHtml r = outputWith elemAsHtml
   where
@@ -207,7 +212,7 @@ codeAsHtml r = outputWith elemAsHtml
       case link_ of
         Link mn ->
           let
-            class_ =
+            class_ = nsToClass ns <> " " <>
               if startsWithUpper name then "ctor" else "ident"
             target
               | isOp name =

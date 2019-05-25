@@ -145,7 +145,7 @@ basicLayout title inner =
       H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
       H.title (toMarkup title)
 
-      H.link ! A.href "https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto:300,400,400i,700,700i"
+      H.link ! A.href "https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,400i,700,700i|Roboto:300,400,400i,700,700i"
              ! A.type_ "text/css" ! A.rel "stylesheet"
       H.style ! A.type_ "text/css" $
         toMarkup D.normalizeCssT
