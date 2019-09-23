@@ -196,8 +196,8 @@ codeAsHtml :: HtmlRenderContext -> RenderedCode -> Html
 codeAsHtml r = outputWith elemAsHtml
   where
   elemAsHtml e = case e of
-    Syntax x ->
-      withClass "syntax" (text x)
+    Syntax ns x ->
+      withClass (nsToClass ns <> " " <> "syntax") (text x)
     Keyword x ->
       withClass "keyword" (text x)
     Space ->

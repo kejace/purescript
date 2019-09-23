@@ -76,7 +76,7 @@ declAsMarkdown decl@Declaration{..} = do
 codeToString :: RenderedCode -> Text
 codeToString = outputWith elemAsMarkdown
   where
-  elemAsMarkdown (Syntax x)     = x
+  elemAsMarkdown (Syntax _ x)   = x
   elemAsMarkdown (Keyword x)    = x
   elemAsMarkdown Space          = " "
   elemAsMarkdown (Symbol _ x _) = x

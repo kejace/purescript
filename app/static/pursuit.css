@@ -169,16 +169,14 @@ body {
 .nsvalue {
   font-weight: normal;
   font-style: normal;
-  color: #ab8d53;
+  color: #ab9b53;
 }
 .nstype {
   font-weight: normal;
-  font-style: italic;
 }
 .nskind {
   font-weight: bold !important;
-  color: #dd9d21;
-  font-style: italic;
+  color: #ddbd21;
 }
 :target {
   background-color: #f1f5f9;

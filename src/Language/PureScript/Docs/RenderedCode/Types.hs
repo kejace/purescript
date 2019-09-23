@@ -196,19 +196,17 @@ instance A.FromJSON Namespace where
 -- multiple output formats. For example, plain text, or highlighted HTML.
 --
 data RenderedCodeElement
-  = Syntax Text
+  = Syntax Namespace Text
   | Keyword Text
   | Space
   -- | Any symbol which you might or might not want to link to, in any
   -- namespace (value, type, or kind). Note that this is not related to the
   -- kind called Symbol for type-level strings.
   | Symbol Namespace Text Link
-  -- Allows grouping related RenderedCodeElements for display purposes (e.g., in a arrowed kind)
-  | RCEGroup [RenderedCodeElement]
   deriving (Show, Eq, Ord)
 
 instance A.ToJSON RenderedCodeElement where
-  toJSON (Syntax str) =
+  toJSON (Syntax _ str) =
     A.toJSON ["syntax", str]
   toJSON (Keyword str) =
     A.toJSON ["keyword", str]
@@ -220,7 +218,7 @@ instance A.ToJSON RenderedCodeElement where
 asRenderedCodeElement :: Parse Text RenderedCodeElement
 asRenderedCodeElement =
   tryParse "RenderedCodeElement" $
-    [ a Syntax "syntax"
+    [ a (Syntax ValueLevel) "syntax"
     , a Keyword "keyword"
     , asSpace
     , asSymbol
@@ -275,13 +273,13 @@ sp = RC [Space]
 -- |
 -- Wrap a RenderedCode value in parens.
 parens :: RenderedCode -> RenderedCode
-parens x = syntax "(" <> x <> syntax ")"
+parens x = syntax ValueLevel "(" <> x <> syntax ValueLevel ")"
 
 -- possible TODO: instead of this function, export RenderedCode values for
 -- each syntax element, eg syntaxArr (== syntax "->"), syntaxLBrace,
 -- syntaxRBrace, etc.
-syntax :: Text -> RenderedCode
-syntax x = RC [Syntax x]
+syntax :: Namespace -> Text -> RenderedCode
+syntax ns x = RC [Syntax ns x]
 
 keyword :: Text -> RenderedCode
 keyword kw = RC [Keyword kw]
@@ -334,8 +332,8 @@ typeOp :: Qualified (OpName 'TypeOpName) -> RenderedCode
 typeOp (fromQualified -> (mn, name)) =
   RC [Symbol TypeLevel (runOpName name) (Link mn)]
 
-typeVar :: Text -> RenderedCode
-typeVar x = RC [Symbol TypeLevel x NoLink]
+typeVar :: Namespace -> Text -> RenderedCode
+typeVar ns x = RC [Symbol ns x NoLink]
 
 kind :: Qualified (ProperName 'KindName) -> RenderedCode
 kind (fromQualified -> (mn, name)) =

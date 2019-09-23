@@ -25,7 +25,7 @@ typeLiterals :: Pattern () (Kind a) RenderedCode
 typeLiterals = mkPattern match
   where
   match (KUnknown _ u) =
-    Just $ typeVar $ T.cons 'k' (T.pack (show u))
+    Just $ typeVar KindLevel $ T.cons 'k' (T.pack (show u))
   match (NamedKind _ n) =
     Just $ kind n
   match _ = Nothing
@@ -53,8 +53,8 @@ renderKind
 
   operators :: OperatorTable () (Kind a) RenderedCode
   operators =
-    OperatorTable [ [ Wrap matchRow $ \_ k -> syntax "#" <> sp <> k]
-                  , [ AssocR funKind $ \arg ret -> arg <> sp <> syntax "-k>" <> sp <> ret ]
+    OperatorTable [ [ Wrap matchRow $ \_ k -> syntax KindLevel "#" <> sp <> k]
+                  , [ AssocR funKind $ \arg ret -> arg <> sp <> syntax KindLevel "->" <> sp <> ret ]
                   -- , [ Split unknownKind $ \_ _ -> syntax "---UNKNOWN---"]
                   -- , [ Split namedKind $ \_ _ -> syntax "---NAMED---"]
                   ]

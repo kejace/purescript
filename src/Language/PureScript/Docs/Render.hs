@@ -25,7 +25,7 @@ renderDeclaration Declaration{..} =
   mintersperse sp $ case declInfo of
     ValueDeclaration ty ->
       [ ident' declTitle
-      , syntax "::"
+      , syntax ValueLevel "::"
       , renderType ty
       ]
     DataDeclaration dtype args ->
@@ -35,13 +35,13 @@ renderDeclaration Declaration{..} =
     ExternDataDeclaration kind' ->
       [ keywordData
       , renderType (P.TypeConstructor () (notQualified declTitle))
-      , syntax "::"
+      , syntax TypeLevel "::"
       , renderKind kind'
       ]
     TypeSynonymDeclaration args ty ->
       [ keywordType
       , renderType (typeApp declTitle args)
-      , syntax "="
+      , syntax TypeLevel "="
       , renderType ty
       ]
     TypeClassDeclaration args implies fundeps ->
@@ -55,22 +55,22 @@ renderDeclaration Declaration{..} =
       superclasses
         | null implies = Nothing
         | otherwise = Just $
-            syntax "("
-            <> mintersperse (syntax "," <> sp) (map renderConstraint implies)
-            <> syntax ")" <> sp <> syntax "<="
+            syntax TypeLevel "("
+            <> mintersperse (syntax TypeLevel "," <> sp) (map renderConstraint implies)
+            <> syntax TypeLevel ")" <> sp <> syntax TypeLevel "<="
 
       fundepsList =
-           [syntax "|" | not (null fundeps)]
+           [syntax TypeLevel "|" | not (null fundeps)]
         ++ [mintersperse
-             (syntax "," <> sp)
-             [typeVars from <> sp <> syntax "-f>" <> sp <> typeVars to | (from, to) <- fundeps ]
+             (syntax TypeLevel "," <> sp)
+             [typeVars from <> sp <> syntax TypeLevel "->" <> sp <> typeVars to | (from, to) <- fundeps ]
            ]
         where
-          typeVars = mintersperse sp . map typeVar
+          typeVars = mintersperse sp . map (typeVar KindLevel)
 
     AliasDeclaration (P.Fixity associativity precedence) for ->
       [ keywordFixity associativity
-      , syntax $ T.pack $ show precedence
+      , syntax TypeLevel $ T.pack $ show precedence
       , alias for
       , keywordAs
       , aliasName for declTitle
@@ -92,7 +92,7 @@ renderChildDeclaration ChildDeclaration{..} =
 
     ChildTypeClassMember ty ->
       [ ident' cdeclTitle
-      , syntax "::"
+      , syntax TypeLevel "::"
       , renderType ty
       ]
 
@@ -104,12 +104,12 @@ renderConstraints :: [Constraint'] -> Maybe RenderedCode
 renderConstraints constraints
   | null constraints = Nothing
   | otherwise = Just $
-        syntax "("
+        syntax TypeLevel "("
         <> renderedConstraints
-        <> syntax ")" <> sp <> syntax "=>"
+        <> syntax TypeLevel ")" <> sp <> syntax TypeLevel "=>"
   where
   renderedConstraints =
-    mintersperse (syntax "," <> sp)
+    mintersperse (syntax TypeLevel "," <> sp)
                  (map renderConstraint constraints)
 
 notQualified :: Text -> P.Qualified (P.ProperName a)

@@ -32,25 +32,25 @@ typeLiterals :: Pattern () PrettyPrintType RenderedCode
 typeLiterals = mkPattern match
   where
   match (PPTypeWildcard name) =
-    Just $ maybe (syntax "_") (syntax . ("?" <>)) name
+    Just $ maybe (syntax TypeLevel "_") (syntax TypeLevel . ("?" <>)) name
   match (PPTypeVar var) =
-    Just (typeVar var)
+    Just (typeVar KindLevel var)
   match (PPRecord labels tail_) =
     Just $ mintersperse sp
-              [ syntax "{"
+              [ syntax TypeLevel "{"
               , renderRow labels tail_
-              , syntax "}"
+              , syntax TypeLevel "}"
               ]
   match (PPTypeConstructor n) =
     Just (typeCtor n)
   match (PPRow labels tail_) =
-    Just (syntax "(" <> renderRow labels tail_ <> syntax ")")
+    Just (syntax TypeLevel "(" <> renderRow labels tail_ <> syntax TypeLevel ")")
   match (PPBinaryNoParensType op l r) =
     Just $ renderTypeAtom' l <> sp <> renderTypeAtom' op <> sp <> renderTypeAtom' r
   match (PPTypeOp n) =
     Just (typeOp n)
   match (PPTypeLevelString str) =
-    Just (syntax (prettyPrintString str))
+    Just (syntax TypeLevel (prettyPrintString str))
   match _ =
     Nothing
 
@@ -63,7 +63,7 @@ renderConstraints :: PrettyPrintConstraint -> RenderedCode -> RenderedCode
 renderConstraints con ty =
   mintersperse sp
     [ renderConstraint con
-    , syntax "=>"
+    , syntax TypeLevel "=>"
     , ty
     ]
 
@@ -74,19 +74,19 @@ renderRow :: [(Label, PrettyPrintType)] -> Maybe PrettyPrintType -> RenderedCode
 renderRow h t = renderHead h <> renderTail t
 
 renderHead :: [(Label, PrettyPrintType)] -> RenderedCode
-renderHead = mintersperse (syntax "," <> sp) . map renderLabel
+renderHead = mintersperse (syntax TypeLevel "," <> sp) . map renderLabel
 
 renderLabel :: (Label, PrettyPrintType) -> RenderedCode
 renderLabel (label, ty) =
   mintersperse sp
-    [ typeVar $ prettyPrintLabel label
-    , syntax "::"
+    [ typeVar KindLevel $ prettyPrintLabel label
+    , syntax TypeLevel "::"
     , renderType' ty
     ]
 
 renderTail :: Maybe PrettyPrintType -> RenderedCode
 renderTail Nothing = mempty
-renderTail (Just other) = sp <> syntax "|" <> sp <> renderType' other
+renderTail (Just other) = sp <> syntax TypeLevel "|" <> sp <> renderType' other
 
 typeApp :: Pattern () PrettyPrintType (PrettyPrintType, PrettyPrintType)
 typeApp = mkPattern match
@@ -121,7 +121,7 @@ explicitParens = mkPattern match
 matchTypeAtom :: Pattern () PrettyPrintType RenderedCode
 matchTypeAtom = typeLiterals <+> fmap parens_ matchType
   where
-  parens_ x = syntax "(" <> x <> syntax ")"
+  parens_ x = syntax TypeLevel "(" <> x <> syntax TypeLevel ")"
 
 matchType :: Pattern () PrettyPrintType RenderedCode
 matchType = buildPrettyPrinter operators matchTypeAtom
@@ -129,10 +129,10 @@ matchType = buildPrettyPrinter operators matchTypeAtom
   operators :: OperatorTable () PrettyPrintType RenderedCode
   operators =
     OperatorTable [ [ AssocL typeApp $ \f x -> f <> sp <> x ]
-                  , [ AssocR appliedFunction $ \arg ret -> mintersperse sp [arg, syntax "-t>", ret] ]
+                  , [ AssocR appliedFunction $ \arg ret -> mintersperse sp [arg, syntax TypeLevel "->", ret] ]
                   , [ Wrap constrained $ \deps ty -> renderConstraints deps ty ]
-                  , [ Wrap forall_ $ \tyVars ty -> mconcat [ keywordForall, sp, renderTypeVars tyVars, syntax ".", sp, ty ] ]
-                  , [ Wrap kinded $ \k ty -> mintersperse sp [ty, syntax "::", renderKind k] ]
+                  , [ Wrap forall_ $ \tyVars ty -> mconcat [ keywordForall, sp, renderTypeVars tyVars, syntax TypeLevel ".", sp, ty ] ]
+                  , [ Wrap kinded $ \k ty -> mintersperse sp [ty, syntax TypeLevel "::", renderKind k] ]
                   , [ Wrap explicitParens $ \_ ty -> ty ]
                   ]
 
@@ -158,8 +158,8 @@ renderTypeVars tyVars = mintersperse sp (map renderTypeVar tyVars)
 
 renderTypeVar :: (Text, Maybe (Kind a)) -> RenderedCode
 renderTypeVar (v, mbK) = case mbK of
-  Nothing -> typeVar v
-  Just k -> mintersperse sp [ mconcat [syntax "(", typeVar v], syntax "::", mconcat [renderKind k, syntax ")"] ]
+  Nothing -> typeVar KindLevel v
+  Just k -> mintersperse sp [ mconcat [syntax TypeLevel "(", typeVar KindLevel v], syntax TypeLevel "::", mconcat [renderKind k, syntax TypeLevel ")"] ]
 
 -- |
 -- Render code representing a Type, as it should appear inside parentheses

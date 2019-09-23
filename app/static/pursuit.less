@@ -210,18 +210,18 @@ html, body {
 .nsvalue {
   font-weight: normal;
   font-style: normal;
-  color: desaturate(@link, 20%);
+  color: spin(desaturate(@link, 20%), 10);
 }
 
 .nstype {
   font-weight: normal;
-  font-style: italic;
+  //font-style: italic;
 }
 
 .nskind {
   font-weight: bold !important;
-  color: saturate(@link, 20%);
-  font-style: italic;
+  color: spin(saturate(@link, 20%), 10);
+  //font-style: italic;
 }
 
 :target {
